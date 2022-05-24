@@ -1,0 +1,55 @@
+﻿<Window x:Class="RenderWarePreviewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RenderWarePreviewer"
+        mc:Ignorable="d"
+        Title="Renderware Previewer" Height="auto" Width="auto"
+        KeyDown="HandleKeyDown"
+        KeyUp="HandleKeyUp">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" MinWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="500" />
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+            <StackPanel Margin="5, 0, 5, 0">
+                <Label Name="GtaDirectoryLabel">C:\\Program Files\...</Label>
+                <Button Click="SelectGtaDirectory">Select GTA Directory</Button>
+            </StackPanel>
+            <StackPanel Name="SkinStackPanel" Margin="0, 20, 0, 0">
+                <Label>Skin:</Label>
+                <ComboBox Name="SkinComboBox" Margin="5, 0, 5, 0" SelectionChanged="SelectSkin">
+                    <ComboBoxItem>Skin #1</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Name="TextureStackPanel" Margin="0, 20, 0, 0">
+                <Label>Texture:</Label>
+                <ComboBox Name="TextureComboBox" Margin="5, 0, 5, 0" SelectionChanged="SelectTexture">
+                    <ComboBoxItem>Texture #1</ComboBoxItem>
+                </ComboBox>
+                <Button Margin="5, 5, 5, 0" Width="50" HorizontalAlignment="Right" Click="ExportImage">Export</Button>
+            </StackPanel>
+            <StackPanel Name="SelectImageStackPanel" Margin="5, 20, 5, 0">
+                <Label Name="ImagePathLabel"></Label>
+                <Button Click="SelectTargetFile">Select Image File</Button>
+            </StackPanel>
+            <StackPanel Name="ImageStackPanel" Margin="5, 20, 5, 0">
+                <Image Name="Image" Width="256" Height="256"></Image>
+            </StackPanel>
+        </StackPanel>
+        <Grid
+            Grid.Column="1"
+            Name="EventSurface"
+            MouseDown="StartCameraMovement" 
+            MouseUp="StopCameraMovement" 
+            MouseLeave="StopCameraMovement" 
+            MouseMove="HandleMouseMovement" 
+            MouseWheel="HandleMouseScroll"
+            Background="#ff444444"
+        >
+            <Viewport3D Name="ViewPort" IsHitTestVisible="False"/>
+        </Grid>
+    </Grid>
+</Window>

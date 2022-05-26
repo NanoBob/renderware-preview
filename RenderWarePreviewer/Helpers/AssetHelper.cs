@@ -155,7 +155,7 @@ namespace RenderWarePreviewer.Helpers
 
         public static string SanitizeName(string name)
         {
-            return name.Replace("_", "").Trim('\0').ToLower();
+            return name.Trim('\0').ToLower();
         }
 
         private Stream GetReadStream(DataEntry data)

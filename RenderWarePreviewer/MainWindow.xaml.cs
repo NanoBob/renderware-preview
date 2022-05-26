@@ -25,6 +25,9 @@ namespace RenderWarePreviewer
 
         private FileSystemWatcher? watcher;
 
+        private Ped SelectedPedModel => (Ped)(this.SkinComboBox.SelectedItem as ComboBoxItem)!.Tag;
+        private string SelectedTexture => ((this.TextureComboBox.SelectedItem as ComboBoxItem)?.Tag as string) ?? "";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -141,19 +144,19 @@ namespace RenderWarePreviewer
                 this.TextureComboBox.Items.Add(new ComboBoxItem() { Content = texture, Tag = texture.Trim('\0') });
 
             this.TextureComboBox.SelectedIndex = 0;
-            LoadSkin((Ped)(this.SkinComboBox.SelectedItem as ComboBoxItem)!.Tag, ((this.TextureComboBox.SelectedItem as ComboBoxItem)?.Tag as string) ?? "");
+            LoadSkin(this.SelectedPedModel, this.SelectedTexture);
         }
 
         private void SelectTexture(object sender, SelectionChangedEventArgs e)
         {
-            LoadSkin((Ped)(this.SkinComboBox.SelectedItem as ComboBoxItem)!.Tag, ((this.TextureComboBox.SelectedItem as ComboBoxItem)?.Tag as string) ?? "");
+            LoadSkin(this.SelectedPedModel, this.SelectedTexture);
         }
 
         private void LoadSkin(Ped ped, string texture)
         {
             try
             {
-                this.sceneManager.LoadModel(ped, texture);
+                this.sceneManager.LoadModel(ped);
                 this.sceneManager.ApplyTo(this.ViewPort);
                 UpdateTexturePreview(ped, texture);
             }
@@ -186,8 +189,8 @@ namespace RenderWarePreviewer
 
         public void ExportImage(object sender, RoutedEventArgs e)
         {
-            var ped = (Ped)(this.SkinComboBox.SelectedItem as ComboBoxItem)!.Tag;
-            var texture = ((this.TextureComboBox.SelectedItem as ComboBoxItem)?.Tag as string) ?? "";
+            var ped = this.SelectedPedModel;
+            var texture = this.SelectedTexture;
 
             var dialog = new System.Windows.Forms.SaveFileDialog()
             {
@@ -252,7 +255,7 @@ namespace RenderWarePreviewer
             {
                 var image = SixLabors.ImageSharp.Image.Load<Rgba32>(file);
                 var ped = (Ped)(this.SkinComboBox.SelectedItem as ComboBoxItem)!.Tag;
-                this.sceneManager.LoadModel(ped, image);
+                this.sceneManager.LoadModel(ped, image, this.SelectedTexture);
                 this.sceneManager.ApplyTo(this.ViewPort);
 
                 UpdateTexturePreview(ped, image);

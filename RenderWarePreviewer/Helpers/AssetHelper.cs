@@ -5,6 +5,7 @@ using RenderWareIo.Structs.Dff;
 using RenderWareIo.Structs.Ide;
 using RenderWareIo.Structs.Img;
 using RenderWareIo.Structs.Txd;
+using RenderWarePreviewer.Constants;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
@@ -116,10 +117,43 @@ namespace RenderWarePreviewer.Helpers
         public IEnumerable<Ped> GetSkins()
         {
             var ide = new IdeFile(Path.Join(this.gtaPath, "data", "peds.ide"));
-            return ide.Ide.Peds.Where(x => x.Id > 0);
+            return ide.Ide.Peds
+                .Where(x => x.Id > 0)
+                .Select(ReplaceSpecials)
+                .Concat(GetAdditionalSkins());
         }
 
-        public string SanitizeName(string name)
+        private Ped ReplaceSpecials(Ped ped)
+        {
+            if (ped.ModelName.StartsWith("special"))
+            {
+                var index = ped.ModelName[^2..];
+                if (int.TryParse(index, out var value))
+                {
+                    ped.ModelName = PedModelConstants.Specials[value];
+                    ped.TxdName = PedModelConstants.Specials[value];
+                }
+            }
+            return ped;
+        }
+
+        private IEnumerable<Ped> GetAdditionalSkins()
+        {
+            List<Ped> additionalPeds = new();
+
+            int i = 300;
+            foreach (var additional in PedModelConstants.Additionals)
+                additionalPeds.Add(new Ped()
+                {
+                    Id = i++,
+                    TxdName = additional,
+                    ModelName = additional
+                });
+
+            return additionalPeds;
+        }
+
+        public static string SanitizeName(string name)
         {
             return name.Replace("_", "").Trim('\0').ToLower();
         }

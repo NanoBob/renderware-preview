@@ -59,28 +59,32 @@ namespace RenderWarePreviewer.Scenes
             return txd.TextureContainer.Textures.Select(x => x.Data.TextureName);
         }
 
-        public void LoadModel(Ped ped, string texture)
+        public void LoadModel(Ped ped)
         {
             var dff = this.assetHelper.GetDff(ped.ModelName);
             var txd = this.assetHelper.GetTxd(ped.TxdName);
 
             var images = this.assetHelper.GetImages(txd);
 
-            var imageName = this.assetHelper.SanitizeName(texture);
-            var image = images.ContainsKey(imageName) ? images[imageName] : images.Values.First();
-            var model = MeshHelper.GetModel(dff, image);
+            var models = MeshHelper.GetModels(dff, images);
 
             this.scene.Clear();
-            this.scene.Add(model, new Vector3D(0, 0, 0), new Vector3D(0, 90, 0));
+            foreach (var model in models)
+                this.scene.Add(model, new Vector3D(0, 0, 0), new Vector3D(0, 90, 0));
         }
 
-        public void LoadModel(Ped ped, Image<Rgba32> image)
+        public void LoadModel(Ped ped, Image<Rgba32> image, string imageName)
         {
             var dff = this.assetHelper.GetDff(ped.ModelName);
-            var model = MeshHelper.GetModel(dff, image);
+            var txd = this.assetHelper.GetTxd(ped.TxdName);
+
+            var images = this.assetHelper.GetImages(txd);
+            images[imageName] = image;
+            var models = MeshHelper.GetModels(dff, images);
 
             this.scene.Clear();
-            this.scene.Add(model, new Vector3D(0, 0, 0), new Vector3D(0, 90, 0));
+            foreach (var model in models)
+                this.scene.Add(model, new Vector3D(0, 0, 0), new Vector3D(0, 90, 0));
         }
 
         public Image<Rgba32> GetImage(Ped ped, string texture)
@@ -89,7 +93,7 @@ namespace RenderWarePreviewer.Scenes
 
             var images = this.assetHelper.GetImages(txd);
 
-            var imageName = this.assetHelper.SanitizeName(texture);
+            var imageName = AssetHelper.SanitizeName(texture);
             var image = images.ContainsKey(imageName) ? images[imageName] : images.Values.First();
             return image;
         }

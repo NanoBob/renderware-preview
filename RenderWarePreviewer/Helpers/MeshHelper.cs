@@ -15,9 +15,26 @@ namespace RenderWarePreviewer.Helpers
     {
         private static Dictionary<string, MeshGeometry3D> pyramids = new();
 
-        public static GeometryModel3D GetModel(Dff dff, SixLabors.ImageSharp.Image<Rgba32>? image)
+        public static IEnumerable<GeometryModel3D> GetModels(
+            Dff dff, 
+            Dictionary<string, SixLabors.ImageSharp.Image<Rgba32>> images)
         {
-            return GetModel(GetMesh(dff), image);
+            var models = new List<GeometryModel3D>();
+            foreach (var geometry in dff.Clump.GeometryList.Geometries)
+            {
+                var materialIndices = geometry.Triangles
+                    .Select(x => x.MaterialIndex)
+                    .Distinct();
+
+                foreach (var materialIndex in materialIndices)
+                {
+                    var material = geometry.MaterialList.Materials[materialIndex];
+                    var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
+                    models.Add(GetModel(GetMesh(geometry, materialIndex), images[materialName]));
+                }
+            }
+
+            return models;
         }
 
         public static GeometryModel3D GetModel(MeshGeometry3D mesh, SixLabors.ImageSharp.Image<Rgba32>? image)
@@ -97,27 +114,27 @@ namespace RenderWarePreviewer.Helpers
             return material;
         }
 
-        public static MeshGeometry3D GetMesh(Dff dff)
+        public static MeshGeometry3D GetMesh(RenderWareIo.Structs.Dff.Geometry geometry, int materialIndex)
         {
             var mesh = new MeshGeometry3D();
-            foreach (var vertex in dff.Clump.GeometryList.Geometries.SelectMany(x => x.MorphTargets.SelectMany(y => y.Vertices)))
+            foreach (var vertex in geometry.MorphTargets.SelectMany(y => y.Vertices))
             {
                 mesh.Positions.Add(new Point3D(vertex.X, vertex.Y, vertex.Z));
             }
 
-            foreach (var triangle in dff.Clump.GeometryList.Geometries.SelectMany(x => x.Triangles))
+            foreach (var triangle in geometry.Triangles.Where(x => x.MaterialIndex == materialIndex))
             {
                 mesh.TriangleIndices.Add(triangle.VertexIndexThree);
                 mesh.TriangleIndices.Add(triangle.VertexIndexTwo);
                 mesh.TriangleIndices.Add(triangle.VertexIndexOne);
             }
 
-            foreach (var normal in dff.Clump.GeometryList.Geometries.SelectMany(x => x.MorphTargets.SelectMany(y => y.Normals)))
+            foreach (var normal in geometry.MorphTargets.SelectMany(y => y.Normals))
             {
                 mesh.Normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
             }
 
-            foreach (var uv in dff.Clump.GeometryList.Geometries.SelectMany(x => x.TexCoords))
+            foreach (var uv in geometry.TexCoords)
             {
                 mesh.TextureCoordinates.Add(new Point(uv.X, uv.Y));
             }
@@ -131,7 +148,7 @@ namespace RenderWarePreviewer.Helpers
             image.CopyPixelDataTo(span);
             var data = MemoryMarshal.AsBytes(span).ToArray();
             var bitmap = new RgbaBitmapSource(data, image.Width);
-            //File.WriteAllBytes("output.rgba", data);
+            //System.IO.File.WriteAllBytes("output.rgba", data);
 
             return bitmap;
         }

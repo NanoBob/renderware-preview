@@ -1,8 +1,5 @@
-﻿using RenderWareIo.Structs.Dff;
-using RenderWarePreviewer.Extensions;
+﻿using RenderWarePreviewer.Extensions;
 using RenderWarePreviewer.Helpers;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -60,13 +57,6 @@ namespace RenderWarePreviewer.Scenes
         {
             this.group.Children.Clear();
             this.group.Children.Add(light);
-        }
-
-        public void Add(Dff dff, Vector3D position, Image<Rgba32>? texture)
-        {
-            var model = MeshHelper.GetModel(dff, texture);
-            model.Transform = new TranslateTransform3D(position);
-            this.group.Children.Add(model);
         }
 
         public void Add(GeometryModel3D model, Vector3D position, Vector3D rotation)
@@ -128,13 +118,6 @@ namespace RenderWarePreviewer.Scenes
 
             Application.Current.Dispatcher.Invoke(DispatcherPriority.Input, () =>
             {
-                //var oldPosition = this.cameraPosition;
-                //this.cameraTransformGroup.Children.Clear();
-                //this.cameraTransformGroup.Children.Add(new TranslateTransform3D((-oldPosition).ToVector3D()));
-                //this.cameraTransformGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.right, rotation.X)));
-                //this.cameraTransformGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.forward, rotation.Y)));
-                //this.cameraTransformGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, rotation.Z)));
-                //this.cameraTransformGroup.Children.Add(new TranslateTransform3D(oldPosition.ToVector3D()));
                 this.camera.LookDirection = this.CameraForward.ToVector3D();
                 this.camera.UpDirection = this.CameraUp.ToVector3D();
             });

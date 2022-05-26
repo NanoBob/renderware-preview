@@ -15,7 +15,8 @@ namespace RenderWarePreviewer.Scenes
         private readonly Transform3DGroup transformGroup;
         private readonly Transform3DGroup cameraTransformGroup;
         private readonly Model3DGroup group;
-        private readonly AmbientLight light;
+        private readonly AmbientLight ambientLight;
+        private readonly DirectionalLight directionalLight;
 
         private readonly Vector3D up = new Vector3D(0, 0, 1);
         private readonly Vector3D right = new Vector3D(1, 0, 0);
@@ -26,11 +27,13 @@ namespace RenderWarePreviewer.Scenes
 
         public Scene()
         {
-            this.light = new AmbientLight(System.Windows.Media.Color.FromArgb(255, 255, 255, 255));
+            this.ambientLight = new AmbientLight(System.Windows.Media.Color.FromArgb(255, 100, 100, 100));
+            this.directionalLight = new DirectionalLight(System.Windows.Media.Color.FromArgb(255, 255, 255, 255), new Vector3D(0, -1, -1));
             this.transformGroup = new();
 
             this.group = new Model3DGroup();
-            this.group.Children.Add(light);
+            this.group.Children.Add(ambientLight);
+            this.group.Children.Add(directionalLight);
             this.group.Transform = this.transformGroup;
 
             this.visual = new ModelVisual3D();
@@ -56,7 +59,8 @@ namespace RenderWarePreviewer.Scenes
         public void Clear()
         {
             this.group.Children.Clear();
-            this.group.Children.Add(light);
+            this.group.Children.Add(ambientLight);
+            this.group.Children.Add(directionalLight);
         }
 
         public void Add(GeometryModel3D model, Vector3D position, Vector3D rotation)
@@ -100,7 +104,6 @@ namespace RenderWarePreviewer.Scenes
         public void ZoomCamera(float value)
         {
             this.SetCameraPosition(this.CameraPosition + this.CameraForward * -value);
-            //this.SetCameraPosition(new Vector3((float)this.camera.Position.X, (float)this.camera.Position.Y + value, (float)this.camera.Position.Z + value));
         }
 
         public void SetCameraPosition(Vector3 position)

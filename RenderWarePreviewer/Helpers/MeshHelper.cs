@@ -13,7 +13,7 @@ namespace RenderWarePreviewer.Helpers
 {
     public static class MeshHelper
     {
-        private static Dictionary<string, MeshGeometry3D> pyramids = new();
+        private static readonly Dictionary<string, MeshGeometry3D> pyramids = new();
 
         public static IEnumerable<GeometryModel3D> GetModels(
             Dff dff, 

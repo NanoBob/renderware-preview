@@ -48,7 +48,7 @@ namespace RenderWarePreviewer.Helpers
 
         public Dff GetDff(string name)
         {
-            if (this.img == null)
+            if (this.img == null || this.intImg == null)
                 throw new FileNotFoundException("No img file found");
 
             var key = SanitizeName(name) + ".dff";
@@ -66,7 +66,7 @@ namespace RenderWarePreviewer.Helpers
 
         public Txd GetTxd(string name)
         {
-            if (this.img == null)
+            if (this.img == null || this.intImg == null)
                 throw new FileNotFoundException("No img file found");
 
             var key = SanitizeName(name) + ".txd";

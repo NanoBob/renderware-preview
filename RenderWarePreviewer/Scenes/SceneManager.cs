@@ -68,9 +68,10 @@ namespace RenderWarePreviewer.Scenes
 
             var models = MeshHelper.GetModels(dff, images);
 
+            var rotation = DetermineRotation(models);
             this.scene.Clear();
             foreach (var model in models)
-                this.scene.Add(model, new Vector3D(0, 0, 0), new Vector3D(0, 90, 0));
+                this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
         }
 
         public void LoadModel(Ped ped, Image<Rgba32> image, string imageName)
@@ -82,9 +83,24 @@ namespace RenderWarePreviewer.Scenes
             images[imageName] = image;
             var models = MeshHelper.GetModels(dff, images);
 
+            var rotation = DetermineRotation(models);
             this.scene.Clear();
             foreach (var model in models)
-                this.scene.Add(model, new Vector3D(0, 0, 0), new Vector3D(0, 90, 0));
+                this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
+        }
+
+        private Vector3D DetermineRotation(IEnumerable<GeometryModel3D> models)
+        {
+            var vertices = models
+                .SelectMany(x => (x.Geometry as MeshGeometry3D)!.Positions);
+            var highestX = vertices.Max(x => x.X);
+            var highestY = vertices.Max(x => x.Y);
+            var highestZ = vertices.Max(x => x.Z);
+
+            if (highestZ > highestX)
+                return new Vector3D(0, 0, 270);
+                
+            return new Vector3D(0, 90, 0);
         }
 
         public Image<Rgba32> GetImage(Ped ped, string texture)

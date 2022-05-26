@@ -99,7 +99,7 @@ namespace RenderWarePreviewer
         {
             try
             {
-                this.GtaDirectoryLabel.Content = path;
+                this.GtaDirectoryLabel.Text = path;
 
                 if (path != null)
                 {

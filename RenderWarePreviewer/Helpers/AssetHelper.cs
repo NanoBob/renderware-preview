@@ -18,6 +18,7 @@ namespace RenderWarePreviewer.Helpers
     {
         private string? gtaPath;
         private ImgFile? img;
+        private ImgFile? intImg;
 
         public AssetHelper()
         {
@@ -30,11 +31,19 @@ namespace RenderWarePreviewer.Helpers
             if (!File.Exists(imgPath))
                 throw new FileNotFoundException($"No img file found at {path}");
 
+            var intImgPath = Path.Join(path, "models", "gta_int.img");
+            if (!File.Exists(intImgPath))
+                throw new FileNotFoundException($"No interior img file found at {path}");
+
             if (this.img != null)
                 this.img.Dispose();
 
+            if (this.intImg != null)
+                this.intImg.Dispose();
+
             this.gtaPath = path;
             this.img = new ImgFile(imgPath);
+            this.intImg = new ImgFile(intImgPath);
         }
 
         public Dff GetDff(string name)
@@ -43,10 +52,10 @@ namespace RenderWarePreviewer.Helpers
                 throw new FileNotFoundException("No img file found");
 
             var key = SanitizeName(name) + ".dff";
-            if (!this.img.Img.DataEntries.ContainsKey(key))
-                throw new FileNotFoundException($"No {name}.dff file found in img file");
+            if (!this.img.Img.DataEntries.ContainsKey(key) && !this.intImg.Img.DataEntries.ContainsKey(key))
+                throw new FileNotFoundException($"No {name}.dff file found in gta_int and img files");
 
-            var data = this.img.Img.DataEntries[key];
+            var data = this.img.Img.DataEntries.ContainsKey(key) ? this.img.Img.DataEntries[key] : this.intImg.Img.DataEntries[key];
             var stream = GetReadStream(data);
 
             var dff = new Dff();
@@ -61,10 +70,10 @@ namespace RenderWarePreviewer.Helpers
                 throw new FileNotFoundException("No img file found");
 
             var key = SanitizeName(name) + ".txd";
-            if (!this.img.Img.DataEntries.ContainsKey(key))
-                throw new FileNotFoundException($"No {name}.txd file found in img file");
+            if (!this.img.Img.DataEntries.ContainsKey(key) && !this.intImg.Img.DataEntries.ContainsKey(key))
+                throw new FileNotFoundException($"No {name}.txd file found in gta_int and img files");
 
-            var data = this.img.Img.DataEntries[key];
+            var data = this.img.Img.DataEntries.ContainsKey(key) ? this.img.Img.DataEntries[key] : this.intImg.Img.DataEntries[key];
             var stream = GetReadStream(data);
 
             var txd = new Txd();

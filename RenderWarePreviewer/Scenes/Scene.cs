@@ -49,7 +49,7 @@ namespace RenderWarePreviewer.Scenes
                 NearPlaneDistance = .1f,
                 Transform = this.cameraTransformGroup,
             };
-            this.SetCameraPosition(new Vector3(0, 2, 0));
+            this.SetCameraPosition(new Vector3(0, 4, 0));
             this.SetCameraRotation(new Vector3(180, 180, 0));
         }
 

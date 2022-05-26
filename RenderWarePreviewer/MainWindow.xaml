@@ -7,33 +7,57 @@
         mc:Ignorable="d"
         Title="Renderware Previewer" Height="auto" Width="auto"
         KeyDown="HandleKeyDown"
-        KeyUp="HandleKeyUp">
-    <Grid>
+        KeyUp="HandleKeyUp"
+        Background="#272537">
+    <Grid Background="#272537">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" MinWidth="250"/>
-            <ColumnDefinition Width="*" MinWidth="500" />
+            <ColumnDefinition Width="10*"></ColumnDefinition>
+            <ColumnDefinition Width="50*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <StackPanel>
+        <StackPanel Grid.ColumnSpan="1">
             <StackPanel Margin="5, 0, 5, 0">
-                <Label Name="GtaDirectoryLabel">C:\\Program Files\...</Label>
-                <Button Click="SelectGtaDirectory">Select GTA Directory</Button>
+                <Label Foreground="white">
+                    <Label.Content>
+                        <AccessText Name="GtaDirectoryLabel" TextWrapping="Wrap"/>
+                    </Label.Content>
+                </Label>
+                
+                <Button Click="SelectGtaDirectory" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Select GTA Directory
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </StackPanel>
             <StackPanel Name="SkinStackPanel" Margin="0, 20, 0, 0">
-                <Label>Skin:</Label>
+                <Label Foreground="white">Skin:</Label>
                 <ComboBox Name="SkinComboBox" Margin="5, 0, 5, 0" SelectionChanged="SelectSkin">
                     <ComboBoxItem>Skin #1</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
             <StackPanel Name="TextureStackPanel" Margin="0, 20, 0, 0">
-                <Label>Texture:</Label>
+                <Label Foreground="white">Texture:</Label>
                 <ComboBox Name="TextureComboBox" Margin="5, 0, 5, 0" SelectionChanged="SelectTexture">
                     <ComboBoxItem>Texture #1</ComboBoxItem>
                 </ComboBox>
-                <Button Margin="5, 5, 5, 0" Width="50" HorizontalAlignment="Right" Click="ExportImage">Export</Button>
+                <Button Margin="5, 5, 5, 0" Width="74" HorizontalAlignment="Right" Click="ExportImage" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Export
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </StackPanel>
             <StackPanel Name="SelectImageStackPanel" Margin="5, 20, 5, 0">
                 <Label Name="ImagePathLabel"></Label>
-                <Button Click="SelectTargetFile">Select Image File</Button>
+                <Button BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30" Click="SelectTargetFile">Select Image File
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </StackPanel>
             <StackPanel Name="ImageStackPanel" Margin="5, 20, 5, 0">
                 <Image Name="Image" Width="256" Height="256"></Image>
@@ -45,11 +69,11 @@
             MouseDown="StartCameraMovement" 
             MouseUp="StopCameraMovement" 
             MouseLeave="StopCameraMovement" 
-            MouseMove="HandleMouseMovement" 
+            MouseMove="HandleMouseMovement"
             MouseWheel="HandleMouseScroll"
-            Background="#ff444444"
+            Background="#272537"
         >
-            <Viewport3D Name="ViewPort" IsHitTestVisible="False"/>
+            <Viewport3D Name="ViewPort" IsHitTestVisible="False" Grid.ColumnSpan="2" />
         </Grid>
     </Grid>
 </Window>

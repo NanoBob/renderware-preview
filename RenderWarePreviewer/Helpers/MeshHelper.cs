@@ -30,7 +30,10 @@ namespace RenderWarePreviewer.Helpers
                 {
                     var material = geometry.MaterialList.Materials[materialIndex];
                     var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
-                    models.Add(GetModel(GetMesh(geometry, materialIndex), images[materialName]));
+                    if (images.ContainsKey(materialName))
+                    {
+                        models.Add(GetModel(GetMesh(geometry, materialIndex), images[materialName]));
+                    }
                 }
             }
 

@@ -14,6 +14,8 @@ namespace RenderWarePreviewer.Scenes
     {
         private readonly Scene scene;
         private readonly AssetHelper assetHelper;
+        private readonly string backgroundDffName = "cj_changing_room";
+        private readonly string backgroundTxdName = "CJ_CHANGE_ROOM";
 
         private Vector3 cameraRotation = new Vector3(180, 180, 0);
 
@@ -70,6 +72,7 @@ namespace RenderWarePreviewer.Scenes
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();
+            LoadBackgroundModels();
             foreach (var model in models)
                 this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
         }
@@ -99,7 +102,7 @@ namespace RenderWarePreviewer.Scenes
 
             if (highestZ > highestX)
                 return new Vector3D(0, 0, 270);
-                
+
             return new Vector3D(0, 90, 0);
         }
 
@@ -117,6 +120,19 @@ namespace RenderWarePreviewer.Scenes
         public void ApplyTo(Viewport3D viewport)
         {
             this.scene.ApplyTo(viewport);
+        }
+
+        public void LoadBackgroundModels()
+        {
+            var backgroundDff = this.assetHelper.GetDff(backgroundDffName);
+            var backgroundTxd = this.assetHelper.GetTxd(backgroundTxdName);
+
+            var images = this.assetHelper.GetImages(backgroundTxd);
+
+            var backgroundModels = MeshHelper.GetModels(backgroundDff, images);
+
+            foreach (var model in backgroundModels)
+                this.scene.Add(model, new Vector3D(0.6, 0.2, 0.8), new Vector3D(0, 0, 90));
         }
     }
 }

@@ -14,8 +14,9 @@ namespace RenderWarePreviewer.Scenes
     {
         private readonly Scene scene;
         private readonly AssetHelper assetHelper;
-        private readonly string backgroundDffName = "cj_changing_room";
-        private readonly string backgroundTxdName = "CJ_CHANGE_ROOM";
+
+        private const string backgroundDffName = "cj_changing_room";
+        private const string backgroundTxdName = "CJ_CHANGE_ROOM";
 
         private Vector3 cameraRotation = new Vector3(180, 180, 0);
 

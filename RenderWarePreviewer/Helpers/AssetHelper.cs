@@ -44,7 +44,7 @@ namespace RenderWarePreviewer.Helpers
 
             var key = SanitizeName(name) + ".dff";
             if (!this.img.Img.DataEntries.ContainsKey(key))
-                throw new FileNotFoundException($"No {name} file found in txd");
+                throw new FileNotFoundException($"No {name}.dff file found in img file");
 
             var data = this.img.Img.DataEntries[key];
             var stream = GetReadStream(data);
@@ -62,7 +62,7 @@ namespace RenderWarePreviewer.Helpers
 
             var key = SanitizeName(name) + ".txd";
             if (!this.img.Img.DataEntries.ContainsKey(key))
-                throw new FileNotFoundException($"No {name} file found in txd");
+                throw new FileNotFoundException($"No {name}.txd file found in img file");
 
             var data = this.img.Img.DataEntries[key];
             var stream = GetReadStream(data);

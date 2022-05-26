@@ -80,7 +80,7 @@ namespace RenderWarePreviewer.Scenes
             var txd = this.assetHelper.GetTxd(ped.TxdName);
 
             var images = this.assetHelper.GetImages(txd);
-            images[imageName] = image;
+            images[AssetHelper.SanitizeName(imageName)] = image;
             var models = MeshHelper.GetModels(dff, images);
 
             var rotation = DetermineRotation(models);

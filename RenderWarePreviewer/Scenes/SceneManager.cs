@@ -89,6 +89,8 @@ namespace RenderWarePreviewer.Scenes
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();
+            LoadBackgroundModels();
+
             foreach (var model in models)
                 this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
         }

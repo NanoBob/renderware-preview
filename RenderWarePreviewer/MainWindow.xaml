@@ -50,7 +50,11 @@
                 </Button>
             </StackPanel>
             <StackPanel Name="SelectImageStackPanel" Margin="5, 20, 5, 0">
-                <Label Name="ImagePathLabel"></Label>
+                <Label Foreground="white">
+                    <Label.Content>
+                        <AccessText Name="ImagePathLabel" TextWrapping="Wrap"/>
+                    </Label.Content>
+                </Label>
                 <Button BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30" Click="SelectTargetFile">Select Image File
                     <Button.Resources>
                         <Style TargetType="Border">

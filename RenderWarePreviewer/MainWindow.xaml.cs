@@ -218,7 +218,7 @@ namespace RenderWarePreviewer
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
 
-            this.ImagePathLabel.Content = dialog.FileName;
+            this.ImagePathLabel.Text = dialog.FileName;
             UpdatePedTexture(dialog.FileName);
 
             this.watcher = new FileSystemWatcher()

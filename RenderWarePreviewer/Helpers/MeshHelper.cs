@@ -139,7 +139,7 @@ namespace RenderWarePreviewer.Helpers
 
             foreach (var uv in geometry.TexCoords)
             {
-                mesh.TextureCoordinates.Add(new Point(uv.X, uv.Y));
+                mesh.TextureCoordinates.Add(new Point((uv.X + 100) % 1f, (uv.Y + 100) % 1f));
             }
             return mesh;
         }

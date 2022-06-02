@@ -1,6 +1,7 @@
 ﻿using BCnEncoder.Decoder;
 using BCnEncoder.ImageSharp;
 using RenderWareIo;
+using RenderWareIo.ReadWriteHelpers;
 using RenderWareIo.Structs.Dff;
 using RenderWareIo.Structs.Ide;
 using RenderWareIo.Structs.Img;
@@ -90,28 +91,31 @@ namespace RenderWarePreviewer.Helpers
             {
                 string sanitizedName = SanitizeName(texture.Data.TextureName);
                 string format = texture.Data.TextureFormatString;
+                var dds = texture.GetDds(false);
+                var data = DdsHelper.StripDdsHeader(dds);
 
                 Image<Rgba32> rgbaImage = new(texture.Data.Width, texture.Data.Height);
 
                 switch (format)
                 {
                     case "RGB32":
+                    case "BGRA32":
                         {
-                            var image = Image.LoadPixelData<Bgra32>(texture.Data.Data, texture.Data.Width, texture.Data.Height);
+                            var image = Image.LoadPixelData<Bgra32>(data, texture.Data.Width, texture.Data.Height);
                             rgbaImage = image.CloneAs<Rgba32>();
                             image.Dispose();
                             break;
                         }
                     case "RGBA32":
                         {
-                            var image = Image.LoadPixelData<Rgba32>(texture.Data.Data, texture.Data.Width, texture.Data.Height);
+                            var image = Image.LoadPixelData<Rgba32>(data, texture.Data.Width, texture.Data.Height);
                             rgbaImage = image;
                             break;
                         }
                     case "DXT1":
                         {
                             BcDecoder decoder = new();
-                            Image<Rgba32> image = decoder.DecodeRawToImageRgba32(texture.Data.Data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc1);
+                            Image<Rgba32> image = decoder.DecodeRawToImageRgba32(data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc1);
                             rgbaImage = image;
                             break;
                         }

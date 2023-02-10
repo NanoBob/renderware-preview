@@ -1,7 +1,9 @@
 ﻿using RenderWareIo.Structs.Ide;
 using RenderWarePreviewer.Helpers;
+using RenderWarePreviewer.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -48,24 +50,24 @@ namespace RenderWarePreviewer.Scenes
         public void LoadGta(string path)
         {
             this.assetHelper.SetGtaPath(path);
+            this.GtaDirectoryChanged?.Invoke(this, path);
         }
 
-
-        public IEnumerable<Ped> GetSkinNames()
+        public IEnumerable<Ped> GetDefinedPeds()
         {
             return this.assetHelper.GetSkins();
         }
 
-        public IEnumerable<string> GetTextures(Ped ped)
+        public IEnumerable<string> GetTextures(GtaModel model)
         {
-            var txd = this.assetHelper.GetTxd(ped.TxdName);
+            var txd = this.assetHelper.GetTxd(model.TxdName);
             return txd.TextureContainer.Textures.Select(x => x.Data.TextureName);
         }
 
-        public void LoadModel(Ped ped)
+        public void LoadModel(GtaModel gtaModel)
         {
-            var dff = this.assetHelper.GetDff(ped.ModelName);
-            var txd = this.assetHelper.GetTxd(ped.TxdName);
+            var dff = this.assetHelper.GetDff(gtaModel.ModelName);
+            var txd = this.assetHelper.GetTxd(gtaModel.TxdName);
 
             var images = this.assetHelper.GetImages(txd);
 
@@ -76,12 +78,14 @@ namespace RenderWarePreviewer.Scenes
             LoadBackgroundModels();
             foreach (var model in models)
                 this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
+
+            this.ModelLoaded?.Invoke(this, gtaModel);
         }
 
-        public void LoadModel(Ped ped, Image<Rgba32> image, string imageName)
+        public void LoadModel(GtaModel gtaModel, Image<Rgba32> image, string imageName)
         {
-            var dff = this.assetHelper.GetDff(ped.ModelName);
-            var txd = this.assetHelper.GetTxd(ped.TxdName);
+            var dff = this.assetHelper.GetDff(gtaModel.ModelName);
+            var txd = this.assetHelper.GetTxd(gtaModel.TxdName);
 
             var images = this.assetHelper.GetImages(txd);
             images[AssetHelper.SanitizeName(imageName)] = image;
@@ -93,6 +97,8 @@ namespace RenderWarePreviewer.Scenes
 
             foreach (var model in models)
                 this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
+
+            this.ModelLoaded?.Invoke(this, gtaModel);
         }
 
         private Vector3D DetermineRotation(IEnumerable<GeometryModel3D> models)
@@ -109,9 +115,9 @@ namespace RenderWarePreviewer.Scenes
             return new Vector3D(0, 90, 0);
         }
 
-        public Image<Rgba32> GetImage(Ped ped, string texture)
+        public Image<Rgba32> GetImage(GtaModel gtaModel, string texture)
         {
-            var txd = this.assetHelper.GetTxd(ped.TxdName);
+            var txd = this.assetHelper.GetTxd(gtaModel.TxdName);
 
             var images = this.assetHelper.GetImages(txd);
 
@@ -123,6 +129,11 @@ namespace RenderWarePreviewer.Scenes
         public void ApplyTo(Viewport3D viewport)
         {
             this.scene.ApplyTo(viewport);
+        }
+
+        public void RequestRender()
+        {
+            this.RenderRequested?.Invoke(this);
         }
 
         public void LoadBackgroundModels()
@@ -137,5 +148,9 @@ namespace RenderWarePreviewer.Scenes
             foreach (var model in backgroundModels)
                 this.scene.Add(model, new Vector3D(0.6, 0.2, 0.8), new Vector3D(0, 0, 90));
         }
+
+        public event Action<SceneManager>? RenderRequested;
+        public event Action<SceneManager, string>? GtaDirectoryChanged;
+        public event Action<SceneManager, GtaModel>? ModelLoaded;
     }
 }

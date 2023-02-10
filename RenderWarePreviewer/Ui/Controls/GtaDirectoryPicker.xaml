@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="RenderWarePreviewer.Ui.Controls.GtaDirectoryPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RenderWarePreviewer.Ui.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Margin="5, 0, 5, 0">
+            <Label Foreground="white">
+                <Label.Content>
+                    <AccessText Name="GtaDirectoryLabel" TextWrapping="Wrap"/>
+                </Label.Content>
+            </Label>
+
+            <Button Click="SelectGtaDirectory" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Select GTA Directory
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

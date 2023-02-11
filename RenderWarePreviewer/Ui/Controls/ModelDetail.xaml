@@ -7,12 +7,28 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="200">
     <StackPanel>
+        <StackPanel Name="ExportPanel" Margin="0, 20, 0, 0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Margin="5, 5, 5, 0" Width="100" HorizontalAlignment="Right" Click="ExportDff" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Export DFF
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button Margin="5, 5, 5, 0" Width="100" HorizontalAlignment="Right" Click="ExportTxd" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Export TXD
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </StackPanel>
         <StackPanel Name="TextureStackPanel" Margin="0, 20, 0, 0">
             <Label Foreground="white">Texture:</Label>
             <ComboBox Name="TextureComboBox" Margin="5, 0, 5, 0" SelectionChanged="SelectTexture">
                 <ComboBoxItem>Texture #1</ComboBoxItem>
             </ComboBox>
-            <Button Margin="5, 5, 5, 0" Width="74" HorizontalAlignment="Right" Click="ExportImage" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Export
+            <Button Margin="5, 5, 5, 0" Width="100" HorizontalAlignment="Right" Click="ExportImage" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30">Export Texture
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -26,7 +42,7 @@
                     <AccessText Name="ImagePathLabel" TextWrapping="Wrap"/>
                 </Label.Content>
             </Label>
-            <Button BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30" Click="SelectTargetFile">Select Image File
+            <Button BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30" Click="SelectTargetFile">Select Image File For Live Reload
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="5"/>

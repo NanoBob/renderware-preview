@@ -96,6 +96,9 @@ public partial class ModelDetail : UserControl
         var model = this.loadedModel;
         var texture = this.SelectedTexture;
 
+        if (model == null)
+            return;
+
         var dialog = new System.Windows.Forms.SaveFileDialog()
         {
             FileName = texture + ".png"
@@ -106,6 +109,44 @@ public partial class ModelDetail : UserControl
 
         var image = this.SceneManager?.GetImage(model, texture);
         image.SaveAsPng(dialog.FileName);
+    }
+
+    public void ExportDff(object sender, RoutedEventArgs e)
+    {
+        var model = this.loadedModel;
+
+        if (model == null || this.sceneManager == null)
+            return;
+
+        var dialog = new System.Windows.Forms.SaveFileDialog()
+        {
+            FileName = model.ModelName + ".dff"
+        };
+
+        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            return;
+
+        var dff = this.SceneManager.GetDff(model);
+        File.WriteAllBytes(dialog.FileName, dff);
+    }
+
+    public void ExportTxd(object sender, RoutedEventArgs e)
+    {
+        var model = this.loadedModel;
+
+        if (model == null || this.sceneManager == null)
+            return;
+
+        var dialog = new System.Windows.Forms.SaveFileDialog()
+        {
+            FileName = model.TxdName + ".txd"
+        };
+
+        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            return;
+
+        var txd = this.SceneManager.GetTxd(model);
+        File.WriteAllBytes(dialog.FileName, txd);
     }
 
     public void SelectTargetFile(object sender, RoutedEventArgs e)

@@ -5,6 +5,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Controls;
@@ -132,6 +133,16 @@ namespace RenderWarePreviewer.Scenes
             var imageName = AssetHelper.SanitizeName(texture);
             var image = images.ContainsKey(imageName) ? images[imageName] : images.Values.First();
             return image;
+        }
+
+        public byte[] GetDff(GtaModel gtaModel)
+        {
+            return this.assetHelper.GetRawDff(gtaModel.ModelName);
+        }
+
+        public byte[] GetTxd(GtaModel gtaModel)
+        {
+            return this.assetHelper.GetRawTxd(gtaModel.TxdName);
         }
 
         public void ApplyTo(Viewport3D viewport)

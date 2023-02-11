@@ -66,6 +66,20 @@ namespace RenderWarePreviewer.Helpers
             return dff;
         }
 
+        public byte[] GetRawDff(string name)
+        {
+            if (this.img == null || this.intImg == null)
+                throw new FileNotFoundException("No img file found");
+
+            var key = SanitizeName(name) + ".dff";
+            if (!this.img.Img.DataEntries.ContainsKey(key) && !this.intImg.Img.DataEntries.ContainsKey(key))
+                throw new FileNotFoundException($"No {name}.dff file found in gta_int and img files");
+
+            var data = this.img.Img.DataEntries.ContainsKey(key) ? this.img.Img.DataEntries[key] : this.intImg.Img.DataEntries[key];
+
+            return data.Data;
+        }
+
         public Txd GetTxd(string name)
         {
             if (this.img == null || this.intImg == null)
@@ -82,6 +96,20 @@ namespace RenderWarePreviewer.Helpers
             txd.Read(stream);
 
             return txd;
+        }
+
+        public byte[] GetRawTxd(string name)
+        {
+            if (this.img == null || this.intImg == null)
+                throw new FileNotFoundException("No img file found");
+
+            var key = SanitizeName(name) + ".txd";
+            if (!this.img.Img.DataEntries.ContainsKey(key) && !this.intImg.Img.DataEntries.ContainsKey(key))
+                throw new FileNotFoundException($"No {name}.txd file found in gta_int and img files");
+
+            var data = this.img.Img.DataEntries.ContainsKey(key) ? this.img.Img.DataEntries[key] : this.intImg.Img.DataEntries[key];
+
+            return data.Data;
         }
 
         public Dictionary<string, Image<Rgba32>> GetImages(Txd txd)

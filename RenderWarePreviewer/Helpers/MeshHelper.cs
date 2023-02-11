@@ -139,9 +139,23 @@ namespace RenderWarePreviewer.Helpers
 
             foreach (var uv in geometry.TexCoords)
             {
-                mesh.TextureCoordinates.Add(new Point((uv.X + 100) % 1f, (uv.Y + 100) % 1f));
+                mesh.TextureCoordinates.Add(SanitzeUv(uv));
             }
             return mesh;
+        }
+
+        private static Point SanitzeUv(Uv uv)
+        {
+            //return new Point(uv.X, uv.Y);
+            //return new Point((uv.X + 100f) % 1, (uv.Y + 100) % 1f);
+            return new Point(
+                uv.X < 0 ? uv.X + MathF.Round(MathF.Abs(uv.X) + 0.5f) :
+                uv.X > 1 ? uv.X % 1f :
+                uv.X,
+                uv.Y < 0 ? uv.Y + MathF.Round(MathF.Abs(uv.Y) + 0.5f) :
+                uv.Y > 1 ? uv.Y % 1f :
+                uv.Y
+            );
         }
 
         private static BitmapSource GetBitMap(SixLabors.ImageSharp.Image<Rgba32> image)

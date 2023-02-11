@@ -18,27 +18,31 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="10*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Grid.ColumnSpan="1">
-            <StackPanel>
-                <Controls:GtaDirectoryPicker x:Name="GtaDirectoryPicker"></Controls:GtaDirectoryPicker>
-            </StackPanel>
-            <StackPanel Margin="0, 25, 0, 0">
-                <TabControl Background="#272537">
-                    <TabItem Header="Peds">
-                        <Controls:PedModelPicker x:Name="PedModelPicker"></Controls:PedModelPicker>
-                    </TabItem>
-                    <TabItem Header="Weapons">
-                        <Controls:WeaponModelPicker x:Name="WeaponModelPicker"></Controls:WeaponModelPicker>
-                    </TabItem>
-                    <TabItem Header="Objects">
-                        <Controls:ObjectModelPicker x:Name="ObjectModelPicker"></Controls:ObjectModelPicker>
-                    </TabItem>
-                </TabControl>
-            </StackPanel>
-            <StackPanel Margin="0, 25, 0, 5">
-                <Controls:ModelDetail x:Name="ModelDetail"></Controls:ModelDetail>
-            </StackPanel>
-        </StackPanel>
+        <DockPanel Grid.ColumnSpan="1" Grid.Row="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="auto">
+                <StackPanel>
+                    <StackPanel>
+                        <Controls:GtaDirectoryPicker x:Name="GtaDirectoryPicker"></Controls:GtaDirectoryPicker>
+                    </StackPanel>
+                    <StackPanel Margin="0, 25, 0, 0">
+                        <TabControl Background="#272537">
+                            <TabItem Header="Peds">
+                                <Controls:PedModelPicker x:Name="PedModelPicker"></Controls:PedModelPicker>
+                            </TabItem>
+                            <TabItem Header="Weapons">
+                                <Controls:WeaponModelPicker x:Name="WeaponModelPicker"></Controls:WeaponModelPicker>
+                            </TabItem>
+                            <TabItem Header="Objects">
+                                <Controls:ObjectModelPicker x:Name="ObjectModelPicker"></Controls:ObjectModelPicker>
+                            </TabItem>
+                        </TabControl>
+                    </StackPanel>
+                    <StackPanel Margin="0, 25, 0, 5">
+                        <Controls:ModelDetail x:Name="ModelDetail"></Controls:ModelDetail>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
         <DockPanel Grid.ColumnSpan="1" Grid.Column="2" Grid.Row="1">
             <Controls:SceneRenderer Width="auto" MinHeight="200" Height="auto" x:Name="SceneRenderer"></Controls:SceneRenderer>
         </DockPanel>

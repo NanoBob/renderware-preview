@@ -19,8 +19,12 @@ namespace RenderWarePreviewer.Scenes
 
         private const string backgroundDffName = "cj_changing_room";
         private const string backgroundTxdName = "CJ_CHANGE_ROOM";
+        private IEnumerable<GeometryModel3D> backgroundModels;
 
         private Vector3 cameraRotation = new Vector3(180, 180, 0);
+
+        public bool RenderBackground { get; set; }
+        public bool RotatesObjects { get; set; }
 
         public SceneManager()
         {
@@ -53,10 +57,9 @@ namespace RenderWarePreviewer.Scenes
             this.GtaDirectoryChanged?.Invoke(this, path);
         }
 
-        public IEnumerable<Ped> GetDefinedPeds()
-        {
-            return this.assetHelper.GetSkins();
-        }
+        public IEnumerable<Ped> GetDefinedPeds() => this.assetHelper.GetSkins();
+        public IEnumerable<Weapon> GetDefinedWeapons() => this.assetHelper.GetWeapons();
+        public IEnumerable<Obj> GetDefinedObjects() => this.assetHelper.GetObjects();
 
         public IEnumerable<string> GetTextures(GtaModel model)
         {
@@ -75,7 +78,9 @@ namespace RenderWarePreviewer.Scenes
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();
+
             LoadBackgroundModels();
+
             foreach (var model in models)
                 this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
 
@@ -103,6 +108,9 @@ namespace RenderWarePreviewer.Scenes
 
         private Vector3D DetermineRotation(IEnumerable<GeometryModel3D> models)
         {
+            if (!this.RotatesObjects)
+                return new Vector3D(0, 0, 0);
+
             var vertices = models
                 .SelectMany(x => (x.Geometry as MeshGeometry3D)!.Positions);
             var highestX = vertices.Max(x => x.X);
@@ -138,14 +146,20 @@ namespace RenderWarePreviewer.Scenes
 
         public void LoadBackgroundModels()
         {
-            var backgroundDff = this.assetHelper.GetDff(backgroundDffName);
-            var backgroundTxd = this.assetHelper.GetTxd(backgroundTxdName);
+            if (!this.RenderBackground)
+                return;
 
-            var images = this.assetHelper.GetImages(backgroundTxd);
+            if (this.backgroundModels == null)
+            {
+                var backgroundDff = this.assetHelper.GetDff(backgroundDffName);
+                var backgroundTxd = this.assetHelper.GetTxd(backgroundTxdName);
 
-            var backgroundModels = MeshHelper.GetModels(backgroundDff, images);
+                var images = this.assetHelper.GetImages(backgroundTxd);
 
-            foreach (var model in backgroundModels)
+                this.backgroundModels = MeshHelper.GetModels(backgroundDff, images);
+            }
+
+            foreach (var model in this.backgroundModels)
                 this.scene.Add(model, new Vector3D(0.6, 0.2, 0.8), new Vector3D(0, 0, 90));
         }
 

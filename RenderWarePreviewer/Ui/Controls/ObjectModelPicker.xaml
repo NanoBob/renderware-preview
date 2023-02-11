@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="RenderWarePreviewer.Ui.Controls.ObjectModelPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RenderWarePreviewer.Ui.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="200">
+    <VirtualizingStackPanel Name="ObjectStackPanel">
+        <Label Foreground="white">Search:</Label>
+        <TextBox Foreground="black" TextChanged="TextBox_TextChanged" Name="Search"></TextBox>
+        <ListBox Name="SearchResults" MaxHeight="400" SelectionChanged="SelectModel">
+            <ListBoxItem>ABC</ListBoxItem>
+            <ListBoxItem>DEF</ListBoxItem>
+        </ListBox>
+    </VirtualizingStackPanel>
+</UserControl>

@@ -7,9 +7,9 @@ using System.Windows.Controls;
 namespace RenderWarePreviewer.Ui.Controls;
 
 /// <summary>
-/// Interaction logic for PedModelPicker.xaml
+/// Interaction logic for WeaponModelPicker.xaml
 /// </summary>
-public partial class PedModelPicker : UserControl
+public partial class WeaponModelPicker : UserControl
 {
     private SceneManager? sceneManager;
     public SceneManager? SceneManager
@@ -27,27 +27,27 @@ public partial class PedModelPicker : UserControl
         }
     }
 
-    public PedModelPicker()
+    public WeaponModelPicker()
     {
         InitializeComponent();
     }
 
     public void RefreshModels(SceneManager manager, string directory)
     {
-        var peds = this.SceneManager?.GetDefinedPeds();
-        if (peds == null)
+        var weapons = this.SceneManager?.GetDefinedWeapons();
+        if (weapons == null)
             return;
 
-        this.SkinComboBox.Items.Clear();
-        foreach (var ped in peds)
-            this.SkinComboBox.Items.Add(new ComboBoxItem() { Content = $"{ped.Id} {ped.ModelName}", Tag = GtaModel.Create(ped) });
+        this.WeaponComboBox.Items.Clear();
+        foreach (var weapon in weapons)
+            this.WeaponComboBox.Items.Add(new ComboBoxItem() { Content = $"{weapon.Id} {weapon.ModelName}", Tag = GtaModel.Create(weapon) });
 
-        this.SkinComboBox.SelectedIndex = 0;
+        this.WeaponComboBox.SelectedIndex = 0;
     }
 
     private void SelectModel(object sender, SelectionChangedEventArgs e)
     {
-        var selectedItem = this.SkinComboBox.SelectedItem as ComboBoxItem;
+        var selectedItem = this.WeaponComboBox.SelectedItem as ComboBoxItem;
         var model = selectedItem?.Tag as GtaModel;
 
         if (model == null || this.sceneManager == null)
@@ -56,7 +56,7 @@ public partial class PedModelPicker : UserControl
         try
         {
             this.sceneManager.RenderBackground = true;
-            this.sceneManager.RotatesObjects = true;
+            this.sceneManager.RotatesObjects = false;
             this.sceneManager.LoadModel(model);
             this.SceneManager.RequestRender();
         }

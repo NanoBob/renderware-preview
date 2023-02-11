@@ -14,8 +14,13 @@ namespace RenderWarePreviewer.Ui
 
             this.sceneManager = new();
             this.SceneRenderer.SceneManager = this.sceneManager;
+
+            this.ObjectModelPicker.SceneManager = this.sceneManager;
+            this.WeaponModelPicker.SceneManager = this.sceneManager;
             this.PedModelPicker.SceneManager = this.sceneManager;
+
             this.ModelDetail.SceneManager = this.sceneManager;
+
             this.GtaDirectoryPicker.SceneManager = this.sceneManager;
             this.GtaDirectoryPicker.Init();
         }

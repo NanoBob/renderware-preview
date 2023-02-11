@@ -7,6 +7,7 @@ using RenderWareIo.Structs.Ide;
 using RenderWareIo.Structs.Img;
 using RenderWareIo.Structs.Txd;
 using RenderWarePreviewer.Constants;
+using RenderWarePreviewer.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
@@ -134,6 +135,27 @@ namespace RenderWarePreviewer.Helpers
                 .Where(x => x.Id > 0)
                 .Select(ReplaceSpecials)
                 .Concat(GetAdditionalSkins());
+        }
+
+        public IEnumerable<Weapon> GetWeapons()
+        {
+            var ide = new IdeFile(Path.Join(this.gtaPath, "data", "default.ide"));
+            return ide.Ide.Weapons;
+        }
+
+        public IEnumerable<Obj> GetObjects()
+        {
+            var ides = Directory.GetFiles(Path.Join(this.gtaPath, "data", "maps"), "*.ide", SearchOption.AllDirectories);
+            var objects = new List<Obj>();
+
+            foreach (var file in ides)
+            {
+                var ide = new IdeFile(file);
+                foreach (var obj in ide.Ide.Objs)
+                    objects.Add(obj);
+            }
+
+            return objects;
         }
 
         private Ped ReplaceSpecials(Ped ped)

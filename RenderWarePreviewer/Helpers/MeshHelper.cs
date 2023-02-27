@@ -98,7 +98,11 @@ namespace RenderWarePreviewer.Helpers
             };
             if (image != null)
             {
-                material.Brush = new ImageBrush(GetBitMap(image));
+                material.Brush = new ImageBrush(GetBitMap(image))
+                {
+                    TileMode = TileMode.Tile,
+                    ViewportUnits = BrushMappingMode.Absolute
+                };
             }
             else
             {
@@ -139,52 +143,9 @@ namespace RenderWarePreviewer.Helpers
 
             foreach (var uv in geometry.TexCoords)
             {
-                mesh.TextureCoordinates.Add(SanitzeUv(uv));
+                mesh.TextureCoordinates.Add(new Point(uv.X, uv.Y));
             }
             return mesh;
-        }
-
-        private static Point SanitzeUv(Uv uv)
-        {
-            //return new Point(uv.X, uv.Y);
-            //return new Point((uv.X + 100f) % 1, (uv.Y + 100) % 1f);
-            //return new Point(
-            //    uv.X < 0 ? uv.X + MathF.Round(MathF.Abs(uv.X) + 0.5f) :
-            //    uv.X > 1 ? uv.X % 1f :
-            //    uv.X,
-            //    uv.Y < 0 ? uv.Y + MathF.Round(MathF.Abs(uv.Y) + 0.5f) :
-            //    uv.Y > 1 ? uv.Y % 1f :
-            //    uv.Y
-            //);
-
-            //return new Point(
-            //    uv.X < -1 ? -(MathF.Abs(uv.X) % 1f) + MathF.Round(MathF.Abs(-(MathF.Abs(uv.X) % 1f)) + 0.5f) :
-            //    uv.X < 0 ? uv.X + MathF.Round(MathF.Abs(uv.X) + 0.5f) :
-            //    uv.X > 1 ? uv.X % 1f :
-            //    uv.X,
-            //    uv.Y < -1 ? -(MathF.Abs(uv.Y) % 1f) + MathF.Round(MathF.Abs(-(MathF.Abs(uv.Y) % 1f)) + 0.5f) :
-            //    uv.Y < 0 ? uv.Y + MathF.Round(MathF.Abs(uv.Y) + 0.5f) :
-            //    uv.Y > 1 ? uv.Y % 1f :
-            //    uv.Y
-            //);
-
-
-            if (uv.X < -1)
-                uv.X = -(MathF.Abs(uv.X) % 1f);
-            if (uv.Y < -1)
-                uv.Y = -(MathF.Abs(uv.Y) % 1f);
-
-            if (uv.X < 0)
-                uv.X = (uv.X + 100);
-            if (uv.Y < 0)
-                uv.Y = (uv.Y + 100);
-
-            if (uv.X > 1)
-                uv.X = uv.X % 1.0f;
-            if (uv.Y > 1)
-                uv.Y = uv.Y % 1.0f;
-
-            return new Point(uv.X, uv.Y);
         }
 
         private static BitmapSource GetBitMap(SixLabors.ImageSharp.Image<Rgba32> image)

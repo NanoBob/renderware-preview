@@ -58,7 +58,7 @@ public partial class PedModelPicker : UserControl
             this.sceneManager.RenderBackground = true;
             this.sceneManager.RotatesObjects = true;
             this.sceneManager.LoadModel(model);
-            this.SceneManager.RequestRender();
+            this.sceneManager.RequestRender();
         }
         catch (Exception ex)
         {

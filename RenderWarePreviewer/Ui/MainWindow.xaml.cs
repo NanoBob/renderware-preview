@@ -15,6 +15,7 @@ namespace RenderWarePreviewer.Ui
             this.sceneManager = new();
             this.SceneRenderer.SceneManager = this.sceneManager;
 
+            this.CustomModelPicker.SceneManager = this.sceneManager;
             this.VehicleModelPicker.SceneManager = this.sceneManager;
             this.ObjectModelPicker.SceneManager = this.sceneManager;
             this.WeaponModelPicker.SceneManager = this.sceneManager;

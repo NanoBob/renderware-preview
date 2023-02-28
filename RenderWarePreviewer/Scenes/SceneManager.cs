@@ -1,4 +1,6 @@
-﻿using RenderWareIo.Structs.Ide;
+﻿using RenderWareIo.Structs.Dff;
+using RenderWareIo.Structs.Ide;
+using RenderWareIo.Structs.Txd;
 using RenderWarePreviewer.Helpers;
 using RenderWarePreviewer.Models;
 using SixLabors.ImageSharp;
@@ -65,14 +67,14 @@ namespace RenderWarePreviewer.Scenes
 
         public IEnumerable<string> GetTextures(GtaModel model)
         {
-            var txd = this.assetHelper.GetTxd(model.TxdName);
+            var txd = GetTexture(model);
+
             return txd.TextureContainer.Textures.Select(x => x.Data.TextureName);
         }
 
         public void LoadModel(GtaModel gtaModel)
         {
-            var dff = this.assetHelper.GetDff(gtaModel.ModelName);
-            var txd = this.assetHelper.GetTxd(gtaModel.TxdName);
+            var (dff, txd) = GetModelAndTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
 
@@ -91,8 +93,7 @@ namespace RenderWarePreviewer.Scenes
 
         public void LoadModel(GtaModel gtaModel, Image<Rgba32> image, string imageName)
         {
-            var dff = this.assetHelper.GetDff(gtaModel.ModelName);
-            var txd = this.assetHelper.GetTxd(gtaModel.TxdName);
+            var (dff, txd) = GetModelAndTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
             images[AssetHelper.SanitizeName(imageName)] = image;
@@ -106,6 +107,25 @@ namespace RenderWarePreviewer.Scenes
                 this.scene.Add(model, new Vector3D(0, 0, 0), rotation);
 
             this.ModelLoaded?.Invoke(this, gtaModel);
+        }
+
+        private Txd GetTexture(GtaModel model)
+        {
+            if (model is CustomGtaModel customModel)
+                return customModel.Txd;
+
+            return this.assetHelper.GetTxd(model.TxdName);
+        }
+
+        private (Dff, Txd) GetModelAndTexture(GtaModel model)
+        {
+            if (model is CustomGtaModel customModel)
+                return (customModel.Dff, customModel.Txd);
+
+            var dff = this.assetHelper.GetDff(model.ModelName);
+            var txd = this.assetHelper.GetTxd(model.TxdName);
+
+            return (dff, txd);
         }
 
         private Vector3D DetermineRotation(IEnumerable<GeometryModel3D> models)
@@ -127,12 +147,13 @@ namespace RenderWarePreviewer.Scenes
 
         public Image<Rgba32> GetImage(GtaModel gtaModel, string texture)
         {
-            var txd = this.assetHelper.GetTxd(gtaModel.TxdName);
+            var txd = GetTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
 
             var imageName = AssetHelper.SanitizeName(texture);
-            var image = images.ContainsKey(imageName) ? images[imageName] : images.Values.First();
+            var image = images.TryGetValue(imageName, out var value) ? value :
+                images.Values.FirstOrDefault() ?? MeshHelper.MissingTexture;
             return image;
         }
 

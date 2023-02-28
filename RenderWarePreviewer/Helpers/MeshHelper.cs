@@ -15,16 +15,16 @@ namespace RenderWarePreviewer.Helpers
     public static class MeshHelper
     {
         private static readonly Dictionary<string, MeshGeometry3D> pyramids = new();
-        private static Image<Rgba32> missingTexture = new(64, 64);
+        public static Image<Rgba32> MissingTexture { get; } = new(64, 64);
 
         static MeshHelper()
         {
             var black = true;
-            for (int x = 0; x < missingTexture.Width; x++)
+            for (int x = 0; x < MissingTexture.Width; x++)
             {
-                for (int y = 0; y < missingTexture.Width; y++)
+                for (int y = 0; y < MissingTexture.Width; y++)
                 {
-                    missingTexture[x, y] = black ? new Rgba32(0, 0, 0) : new Rgba32(255, 0, 255);
+                    MissingTexture[x, y] = black ? new Rgba32(0, 0, 0) : new Rgba32(255, 0, 255);
 
                     black = !black;
                 }
@@ -56,7 +56,7 @@ namespace RenderWarePreviewer.Helpers
                         models.Add(GetModel(GetMesh(geometry, index), images[materialName]));
                     } else
                     {
-                        models.Add(GetModel(GetMesh(geometry, index), missingTexture));
+                        models.Add(GetModel(GetMesh(geometry, index), MissingTexture));
                     }
                 }
             }

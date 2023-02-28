@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="RenderWarePreviewer.Ui.Controls.CustomModelPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RenderWarePreviewer.Ui.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="200">
+    <VirtualizingStackPanel Name="CustomStackPanel">
+        <StackPanel>
+            <Button Click="SelectDff" HorizontalAlignment="Left" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30" Width="96">Select DFF
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Label Name="DffLabel" Foreground="White"></Label>
+        </StackPanel>
+        <StackPanel Margin="0, 10, 0, 0">
+            <Button Click="SelectTxd" HorizontalAlignment="Left" BorderBrush="#34495E" Background="#34495E" Foreground="White" Height="30" Width="96">Select TXD
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Label Name="TxdLabel" Foreground="White"></Label>
+        </StackPanel>
+    </VirtualizingStackPanel>
+</UserControl>

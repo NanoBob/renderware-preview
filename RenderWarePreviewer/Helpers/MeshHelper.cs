@@ -1,4 +1,5 @@
 ﻿using RenderWareIo.Structs.Dff;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,22 @@ namespace RenderWarePreviewer.Helpers
     public static class MeshHelper
     {
         private static readonly Dictionary<string, MeshGeometry3D> pyramids = new();
+        private static Image<Rgba32> missingTexture = new(64, 64);
+
+        static MeshHelper()
+        {
+            var black = true;
+            for (int x = 0; x < missingTexture.Width; x++)
+            {
+                for (int y = 0; y < missingTexture.Width; y++)
+                {
+                    missingTexture[x, y] = black ? new Rgba32(0, 0, 0) : new Rgba32(255, 0, 255);
+
+                    black = !black;
+                }
+                black = !black;
+            }
+        }
 
         public static IEnumerable<GeometryModel3D> GetModels(
             Dff dff, 
@@ -28,11 +45,18 @@ namespace RenderWarePreviewer.Helpers
 
                 foreach (var materialIndex in materialIndices)
                 {
-                    var material = geometry.MaterialList.Materials[materialIndex];
+                    var index = materialIndex;
+                    if (materialIndex >= geometry.MaterialList.Materials.Count)
+                        index = 0;
+
+                    var material = geometry.MaterialList.Materials[index];
                     var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
                     if (images.ContainsKey(materialName))
                     {
-                        models.Add(GetModel(GetMesh(geometry, materialIndex), images[materialName]));
+                        models.Add(GetModel(GetMesh(geometry, index), images[materialName]));
+                    } else
+                    {
+                        models.Add(GetModel(GetMesh(geometry, index), missingTexture));
                     }
                 }
             }
@@ -143,7 +167,7 @@ namespace RenderWarePreviewer.Helpers
 
             foreach (var uv in geometry.TexCoords)
             {
-                mesh.TextureCoordinates.Add(new Point(uv.X, uv.Y));
+                mesh.TextureCoordinates.Add(new System.Windows.Point(uv.X, uv.Y));
             }
             return mesh;
         }

@@ -186,6 +186,14 @@ namespace RenderWarePreviewer.Helpers
             return objects;
         }
 
+        public IEnumerable<Car> GetVehicles()
+        {
+            var file = Path.Join(this.gtaPath, "data", "vehicles.ide");
+            var ide = new IdeFile(file);
+
+            return ide.Ide.Cars;
+        }
+
         private Ped ReplaceSpecials(Ped ped)
         {
             if (ped.ModelName.StartsWith("special"))

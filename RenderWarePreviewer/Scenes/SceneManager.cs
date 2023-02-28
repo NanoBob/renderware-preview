@@ -61,6 +61,7 @@ namespace RenderWarePreviewer.Scenes
         public IEnumerable<Ped> GetDefinedPeds() => this.assetHelper.GetSkins();
         public IEnumerable<Weapon> GetDefinedWeapons() => this.assetHelper.GetWeapons();
         public IEnumerable<Obj> GetDefinedObjects() => this.assetHelper.GetObjects();
+        public IEnumerable<Car> GetDefinedVehicles() => this.assetHelper.GetVehicles();
 
         public IEnumerable<string> GetTextures(GtaModel model)
         {

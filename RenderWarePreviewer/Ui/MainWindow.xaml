@@ -35,6 +35,9 @@
                             <TabItem Header="Objects">
                                 <Controls:ObjectModelPicker x:Name="ObjectModelPicker"></Controls:ObjectModelPicker>
                             </TabItem>
+                            <TabItem Header="Vehicles">
+                                <Controls:VehicleModelPicker x:Name="VehicleModelPicker"></Controls:VehicleModelPicker>
+                            </TabItem>
                         </TabControl>
                     </StackPanel>
                     <StackPanel Margin="0, 25, 0, 5">

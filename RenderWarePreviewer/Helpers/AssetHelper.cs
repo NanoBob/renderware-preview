@@ -148,6 +148,13 @@ namespace RenderWarePreviewer.Helpers
                             rgbaImage = image;
                             break;
                         }
+                    case "DXT3":
+                        {
+                            BcDecoder decoder = new();
+                            Image<Rgba32> image = decoder.DecodeRawToImageRgba32(data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc3);
+                            rgbaImage = image;
+                            break;
+                        }
                 }
 
                 images[sanitizedName] = rgbaImage;

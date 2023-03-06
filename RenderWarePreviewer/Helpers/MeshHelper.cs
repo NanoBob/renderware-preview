@@ -185,9 +185,8 @@ namespace RenderWarePreviewer.Helpers
 
             var mesh = new MeshGeometry3D();
             foreach (var vertex in vertices)
-            {
                 mesh.Positions.Add(new Point3D(vertex.X, vertex.Y, vertex.Z));
-            }
+
             if (geometry.TexCoords.Any())
             {
                 var uvs = vertices
@@ -198,14 +197,12 @@ namespace RenderWarePreviewer.Helpers
                     mesh.TextureCoordinates.Add(new System.Windows.Point(uv.X, uv.Y));
             }
 
-            foreach (var index in strip.Indices
-                .Select(x => reverseVertexTranslationMap[(int)x]))
+            foreach (var index in strip.Indices.Select(x => reverseVertexTranslationMap[(int)x]))
                 mesh.TriangleIndices.Add(index);
 
-            foreach (var normal in geometry.MorphTargets.SelectMany(y => y.Normals))
-            {
-                mesh.Normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
-            }
+            //foreach (var normal in geometry.MorphTargets.SelectMany(y => y.Normals))
+            //    mesh.Normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+
             return mesh;
         }
 
@@ -213,9 +210,7 @@ namespace RenderWarePreviewer.Helpers
         {
             var mesh = new MeshGeometry3D();
             foreach (var vertex in geometry.MorphTargets.SelectMany(y => y.Vertices))
-            {
                 mesh.Positions.Add(new Point3D(vertex.X, vertex.Y, vertex.Z));
-            }
 
             foreach (var triangle in geometry.Triangles.Where(x => x.MaterialIndex == materialIndex))
             {
@@ -225,14 +220,11 @@ namespace RenderWarePreviewer.Helpers
             }
 
             foreach (var normal in geometry.MorphTargets.SelectMany(y => y.Normals))
-            {
                 mesh.Normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
-            }
 
             foreach (var uv in geometry.TexCoords)
-            {
                 mesh.TextureCoordinates.Add(new System.Windows.Point(uv.X, uv.Y));
-            }
+
             return mesh;
         }
 

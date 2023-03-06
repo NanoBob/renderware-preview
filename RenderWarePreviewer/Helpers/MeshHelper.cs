@@ -1,9 +1,14 @@
 ﻿using RenderWareIo.Structs.Dff;
+using RenderWareIo.Structs.Dff.Plugins;
+using RenderWareIo.Structs.Ide;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
@@ -34,29 +39,48 @@ namespace RenderWarePreviewer.Helpers
 
         public static IEnumerable<GeometryModel3D> GetModels(
             Dff dff, 
-            Dictionary<string, SixLabors.ImageSharp.Image<Rgba32>> images)
+            Dictionary<string, SixLabors.ImageSharp.Image<Rgba32>> images,
+            bool useBinMeshPlugin = false)
         {
             var models = new List<GeometryModel3D>();
             foreach (var geometry in dff.Clump.GeometryList.Geometries)
             {
-                var materialIndices = geometry.Triangles
-                    .Select(x => x.MaterialIndex)
-                    .Distinct();
-
-                foreach (var materialIndex in materialIndices)
+                if (geometry.Extension.Extensions.Any(x => x is BinMesh) && useBinMeshPlugin)
                 {
-                    var index = materialIndex;
-                    if (materialIndex >= geometry.MaterialList.Materials.Count)
-                        index = 0;
+                    var binMesh = (geometry.Extension.Extensions.First(x => x is BinMesh) as BinMesh)!;
+                    foreach (var strip in binMesh.BinMeshStrips)
+                    {
+                        var index = (int)strip.MaterialIndex;
+                        if (index >= geometry.MaterialList.Materials.Count)
+                            index = 0;
 
-                    var material = geometry.MaterialList.Materials[index];
-                    var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
-                    if (images.ContainsKey(materialName))
+                        var material = geometry.MaterialList.Materials[index];
+                        var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
+
+                        if (images.ContainsKey(materialName))
+                            models.Add(GetModel(GetMesh(geometry, strip), images[materialName]));
+                        else
+                            models.Add(GetModel(GetMesh(geometry, strip), MissingTexture));
+                    }
+                }
+                else
+                {
+                    var materialIndices = geometry.Triangles
+                        .Select(x => x.MaterialIndex)
+                        .Distinct();
+
+                    foreach (var materialIndex in materialIndices)
                     {
-                        models.Add(GetModel(GetMesh(geometry, index), images[materialName]));
-                    } else
-                    {
-                        models.Add(GetModel(GetMesh(geometry, index), MissingTexture));
+                        var index = materialIndex;
+                        if (materialIndex >= geometry.MaterialList.Materials.Count)
+                            index = 0;
+
+                        var material = geometry.MaterialList.Materials[index];
+                        var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
+                        if (images.ContainsKey(materialName))
+                            models.Add(GetModel(GetMesh(geometry, index), images[materialName]));
+                        else
+                            models.Add(GetModel(GetMesh(geometry, index), MissingTexture));
                     }
                 }
             }
@@ -143,6 +167,46 @@ namespace RenderWarePreviewer.Helpers
                 Brush = new SolidColorBrush(color)
             };
             return material;
+        }
+
+        public static MeshGeometry3D GetMesh(RenderWareIo.Structs.Dff.Geometry geometry, BinMeshStrip strip)
+        {
+            Dictionary<int, int> vertexTranslationMap = new();
+            Dictionary<int, int> reverseVertexTranslationMap = new();
+            List<Vector3> vertices = new();
+
+            foreach (var index in strip.Indices)
+            {
+                var vertex = geometry.MorphTargets.First().Vertices[(int)index];
+                vertexTranslationMap[vertices.Count] = (int)index;
+                reverseVertexTranslationMap[(int)index] = vertices.Count;
+                vertices.Add(new Vector3(vertex.X, vertex.Y, vertex.Z));
+            }
+
+            var mesh = new MeshGeometry3D();
+            foreach (var vertex in vertices)
+            {
+                mesh.Positions.Add(new Point3D(vertex.X, vertex.Y, vertex.Z));
+            }
+            if (geometry.TexCoords.Any())
+            {
+                var uvs = vertices
+                    .Select((vector, index) => geometry.TexCoords.ElementAt(vertexTranslationMap[index]))
+                    .Select(x => new Vector2(x.X, x.Y));
+
+                foreach (var uv in uvs)
+                    mesh.TextureCoordinates.Add(new System.Windows.Point(uv.X, uv.Y));
+            }
+
+            foreach (var index in strip.Indices
+                .Select(x => reverseVertexTranslationMap[(int)x]))
+                mesh.TriangleIndices.Add(index);
+
+            foreach (var normal in geometry.MorphTargets.SelectMany(y => y.Normals))
+            {
+                mesh.Normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));
+            }
+            return mesh;
         }
 
         public static MeshGeometry3D GetMesh(RenderWareIo.Structs.Dff.Geometry geometry, int materialIndex)

@@ -87,7 +87,7 @@ public partial class CustomModelPicker : UserControl
 
         this.SceneManager.RenderBackground = false;
         this.SceneManager.RotatesObjects = false;
-        this.SceneManager.LoadModel(model);
+        this.SceneManager.LoadModel(model, true);
         this.SceneManager.RequestRender();
     }
 }

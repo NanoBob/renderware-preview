@@ -72,13 +72,13 @@ namespace RenderWarePreviewer.Scenes
             return txd.TextureContainer.Textures.Select(x => x.Data.TextureName);
         }
 
-        public void LoadModel(GtaModel gtaModel)
+        public void LoadModel(GtaModel gtaModel, bool useBinMeshPlugin = false)
         {
             var (dff, txd) = GetModelAndTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
 
-            var models = MeshHelper.GetModels(dff, images);
+            var models = MeshHelper.GetModels(dff, images, useBinMeshPlugin);
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();
@@ -91,13 +91,13 @@ namespace RenderWarePreviewer.Scenes
             this.ModelLoaded?.Invoke(this, gtaModel);
         }
 
-        public void LoadModel(GtaModel gtaModel, Image<Rgba32> image, string imageName)
+        public void LoadModel(GtaModel gtaModel, Image<Rgba32> image, string imageName, bool useBinMeshPlugin = false)
         {
             var (dff, txd) = GetModelAndTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
             images[AssetHelper.SanitizeName(imageName)] = image;
-            var models = MeshHelper.GetModels(dff, images);
+            var models = MeshHelper.GetModels(dff, images, useBinMeshPlugin);
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();

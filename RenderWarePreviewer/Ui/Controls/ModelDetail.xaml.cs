@@ -1,5 +1,4 @@
-﻿using RenderWareIo.Structs.Ide;
-using RenderWarePreviewer.Models;
+﻿using RenderWarePreviewer.Models;
 using RenderWarePreviewer.Scenes;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -164,7 +163,7 @@ public partial class ModelDetail : UserControl
             return;
 
         this.ImagePathLabel.Text = dialog.FileName;
-        UpdatePedTexture(dialog.FileName);
+        UpdateTexture(dialog.FileName);
 
         this.watcher = new FileSystemWatcher()
         {
@@ -187,7 +186,7 @@ public partial class ModelDetail : UserControl
     {
         try
         {
-            UpdatePedTexture(e.FullPath);
+            UpdateTexture(e.FullPath);
         }
         catch (Exception ex)
         {
@@ -195,7 +194,7 @@ public partial class ModelDetail : UserControl
         }
     }
 
-    private void UpdatePedTexture(string file)
+    private void UpdateTexture(string file)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {

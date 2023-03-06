@@ -214,5 +214,8 @@ public partial class ModelDetail : UserControl
             return;
 
         this.sceneManager.UseBinMeshPlugin = this.binMeshCheckbox.IsChecked ?? false;
+
+        if (this.loadedModel != null)
+            this.SceneManager?.LoadModel(this.loadedModel);
     }
 }

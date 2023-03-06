@@ -27,6 +27,15 @@ namespace RenderWarePreviewer.Ui
             this.GtaDirectoryPicker.Init();
         }
 
+        public void HandleKeyDownPreview(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                e.Handled = true;
+                this.SceneRenderer.HandleKeyDown(sender, e);
+            }
+        }
+
         public void HandleKeyDown(object sender, KeyEventArgs e)
         {
             this.SceneRenderer.HandleKeyDown(sender, e);

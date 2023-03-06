@@ -22,12 +22,13 @@ namespace RenderWarePreviewer.Scenes
 
         private const string backgroundDffName = "cj_changing_room";
         private const string backgroundTxdName = "CJ_CHANGE_ROOM";
-        private IEnumerable<GeometryModel3D> backgroundModels;
+        private IEnumerable<GeometryModel3D> backgroundModels = Array.Empty<GeometryModel3D>();
 
-        private Vector3 cameraRotation = new Vector3(180, 180, 0);
+        private Vector3 cameraRotation = new(180, 180, 0);
 
         public bool RenderBackground { get; set; }
         public bool RotatesObjects { get; set; }
+        public bool UseBinMeshPlugin { get; set; }
 
         public SceneManager()
         {
@@ -72,13 +73,13 @@ namespace RenderWarePreviewer.Scenes
             return txd.TextureContainer.Textures.Select(x => x.Data.TextureName);
         }
 
-        public void LoadModel(GtaModel gtaModel, bool useBinMeshPlugin = false)
+        public void LoadModel(GtaModel gtaModel)
         {
             var (dff, txd) = GetModelAndTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
 
-            var models = MeshHelper.GetModels(dff, images, useBinMeshPlugin);
+            var models = MeshHelper.GetModels(dff, images, this.UseBinMeshPlugin);
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();
@@ -91,13 +92,13 @@ namespace RenderWarePreviewer.Scenes
             this.ModelLoaded?.Invoke(this, gtaModel);
         }
 
-        public void LoadModel(GtaModel gtaModel, Image<Rgba32> image, string imageName, bool useBinMeshPlugin = false)
+        public void LoadModel(GtaModel gtaModel, Image<Rgba32> image, string imageName)
         {
             var (dff, txd) = GetModelAndTexture(gtaModel);
 
             var images = this.assetHelper.GetImages(txd);
             images[AssetHelper.SanitizeName(imageName)] = image;
-            var models = MeshHelper.GetModels(dff, images, useBinMeshPlugin);
+            var models = MeshHelper.GetModels(dff, images, this.UseBinMeshPlugin);
 
             var rotation = DetermineRotation(models);
             this.scene.Clear();
@@ -182,7 +183,7 @@ namespace RenderWarePreviewer.Scenes
             if (!this.RenderBackground)
                 return;
 
-            if (this.backgroundModels == null)
+            if (!this.backgroundModels.Any())
             {
                 var backgroundDff = this.assetHelper.GetDff(backgroundDffName);
                 var backgroundTxd = this.assetHelper.GetTxd(backgroundTxdName);

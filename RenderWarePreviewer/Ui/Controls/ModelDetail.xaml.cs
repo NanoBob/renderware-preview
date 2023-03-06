@@ -207,4 +207,12 @@ public partial class ModelDetail : UserControl
             UpdateTexturePreview(this.loadedModel, image);
         });
     }
+
+    private void HandleBinMeshCheckboxChange(object sender, RoutedEventArgs e)
+    {
+        if (this.sceneManager == null)
+            return;
+
+        this.sceneManager.UseBinMeshPlugin = this.binMeshCheckbox.IsChecked ?? false;
+    }
 }

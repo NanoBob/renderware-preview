@@ -36,6 +36,9 @@
                 </Button.Resources>
             </Button>
         </StackPanel>
+        <StackPanel>
+            <CheckBox Name="binMeshCheckbox" Foreground="white" Unchecked="HandleBinMeshCheckboxChange" Checked="HandleBinMeshCheckboxChange">Use bin mesh plugin for rendering</CheckBox>
+        </StackPanel>
         <StackPanel Name="SelectImageStackPanel" Margin="5, 20, 5, 0">
             <Label Foreground="white">
                 <Label.Content>

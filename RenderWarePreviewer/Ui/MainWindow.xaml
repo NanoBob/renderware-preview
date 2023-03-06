@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         Title="Renderware Previewer" Height="auto" Width="auto"
         KeyDown="HandleKeyDown"
+        PreviewKeyDown="HandleKeyDownPreview"
         KeyUp="HandleKeyUp"
         Background="#272537">
     <Grid Background="#272537">

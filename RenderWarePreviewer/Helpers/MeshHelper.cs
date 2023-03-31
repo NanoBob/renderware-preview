@@ -1,16 +1,12 @@
 ﻿using RenderWareIo.Structs.Dff;
 using RenderWareIo.Structs.Dff.Plugins;
-using RenderWareIo.Structs.Ide;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -38,7 +34,7 @@ namespace RenderWarePreviewer.Helpers
         }
 
         public static IEnumerable<GeometryModel3D> GetModels(
-            Dff dff, 
+            Dff dff,
             Dictionary<string, SixLabors.ImageSharp.Image<Rgba32>> images,
             bool useBinMeshPlugin = false)
         {
@@ -57,10 +53,11 @@ namespace RenderWarePreviewer.Helpers
                         var material = geometry.MaterialList.Materials[index];
                         var materialName = AssetHelper.SanitizeName(material.Texture.Name.Value);
 
+                        var isStrip = (binMesh.Flags & 0x01) != 0;
                         if (images.ContainsKey(materialName))
-                            models.Add(GetModel(GetMesh(geometry, strip), images[materialName]));
+                            models.Add(GetModel(GetMesh(geometry, strip, isStrip), images[materialName]));
                         else
-                            models.Add(GetModel(GetMesh(geometry, strip), MissingTexture));
+                            models.Add(GetModel(GetMesh(geometry, strip, isStrip), MissingTexture));
                     }
                 }
                 else
@@ -169,7 +166,7 @@ namespace RenderWarePreviewer.Helpers
             return material;
         }
 
-        public static MeshGeometry3D GetMesh(RenderWareIo.Structs.Dff.Geometry geometry, BinMeshStrip strip)
+        public static MeshGeometry3D GetMesh(RenderWareIo.Structs.Dff.Geometry geometry, BinMeshStrip strip, bool isStrip)
         {
             Dictionary<int, int> vertexTranslationMap = new();
             Dictionary<int, int> reverseVertexTranslationMap = new();
@@ -197,8 +194,30 @@ namespace RenderWarePreviewer.Helpers
                     mesh.TextureCoordinates.Add(new System.Windows.Point(uv.X, uv.Y));
             }
 
-            foreach (var index in strip.Indices.Select(x => reverseVertexTranslationMap[(int)x]))
-                mesh.TriangleIndices.Add(index);
+            var indices = strip.Indices.Select(x => reverseVertexTranslationMap[(int)x]).ToArray();
+
+            if (isStrip)
+            {
+                for (var index = 2; index < indices.Length; index++)
+                {
+                    if (index % 2 == 0)
+                    {
+                        mesh.TriangleIndices.Add(indices[index - 2]);
+                        mesh.TriangleIndices.Add(indices[index - 1]);
+                        mesh.TriangleIndices.Add(indices[index]);
+                    }
+                    else
+                    {
+                        mesh.TriangleIndices.Add(indices[index]);
+                        mesh.TriangleIndices.Add(indices[index - 1]);
+                        mesh.TriangleIndices.Add(indices[index - 2]);
+                    }
+                }
+            } else
+            {
+                foreach (var index in indices)
+                    mesh.TriangleIndices.Add(index);
+            }
 
             //foreach (var normal in geometry.MorphTargets.SelectMany(y => y.Normals))
             //    mesh.Normals.Add(new Vector3D(normal.X, normal.Y, normal.Z));

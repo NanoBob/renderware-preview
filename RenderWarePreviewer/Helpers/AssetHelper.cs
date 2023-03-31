@@ -130,29 +130,23 @@ namespace RenderWarePreviewer.Helpers
                     case "RGB32":
                     case "BGRA32":
                         {
-                            var image = Image.LoadPixelData<Bgra32>(data, texture.Data.Width, texture.Data.Height);
+                            using var image = Image.LoadPixelData<Bgra32>(data, texture.Data.Width, texture.Data.Height);
                             rgbaImage = image.CloneAs<Rgba32>();
-                            image.Dispose();
                             break;
                         }
                     case "RGBA32":
                         {
-                            var image = Image.LoadPixelData<Rgba32>(data, texture.Data.Width, texture.Data.Height);
-                            rgbaImage = image;
+                            rgbaImage = Image.LoadPixelData<Rgba32>(data, texture.Data.Width, texture.Data.Height);
                             break;
                         }
                     case "DXT1":
                         {
-                            BcDecoder decoder = new();
-                            Image<Rgba32> image = decoder.DecodeRawToImageRgba32(data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc1);
-                            rgbaImage = image;
+                            rgbaImage = new BcDecoder().DecodeRawToImageRgba32(data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc1);
                             break;
                         }
                     case "DXT3":
                         {
-                            BcDecoder decoder = new();
-                            Image<Rgba32> image = decoder.DecodeRawToImageRgba32(data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc3);
-                            rgbaImage = image;
+                            rgbaImage = new BcDecoder().DecodeRawToImageRgba32(data, texture.Data.Width, texture.Data.Height, BCnEncoder.Shared.CompressionFormat.Bc3);
                             break;
                         }
                 }

@@ -6,158 +6,143 @@ using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 
-namespace RenderWarePreviewer.Scenes
+namespace RenderWarePreviewer.Scenes;
+
+public class Scene
 {
-    public class Scene
+    private readonly PerspectiveCamera camera;
+    private readonly ModelVisual3D visual;
+    private readonly Transform3DGroup transformGroup;
+    private readonly Transform3DGroup cameraTransformGroup;
+    private readonly Model3DGroup group;
+    private readonly AmbientLight ambientLight;
+    private readonly DirectionalLight directionalLight;
+
+    private readonly Vector3D up = new Vector3D(0, 0, 1);
+    private readonly Vector3D right = new Vector3D(1, 0, 0);
+    private readonly Vector3D forward = new Vector3D(0, 1, 0);
+
+    private Vector3 cameraPosition;
+    private Vector3 cameraRotation;
+
+    public Scene()
     {
-        private readonly PerspectiveCamera camera;
-        private readonly ModelVisual3D visual;
-        private readonly Transform3DGroup transformGroup;
-        private readonly Transform3DGroup cameraTransformGroup;
-        private readonly Model3DGroup group;
-        private readonly AmbientLight ambientLight;
-        private readonly DirectionalLight directionalLight;
+        this.ambientLight = new AmbientLight(System.Windows.Media.Color.FromArgb(255, 100, 100, 100));
+        this.directionalLight = new DirectionalLight(System.Windows.Media.Color.FromArgb(255, 255, 255, 255), new Vector3D(0, -1, -1));
+        this.transformGroup = new();
 
-        private readonly Vector3D up = new Vector3D(0, 0, 1);
-        private readonly Vector3D right = new Vector3D(1, 0, 0);
-        private readonly Vector3D forward = new Vector3D(0, 1, 0);
+        this.group = new Model3DGroup();
+        this.group.Children.Add(ambientLight);
+        this.group.Children.Add(directionalLight);
+        this.group.Transform = this.transformGroup;
 
-        private Vector3 cameraPosition;
-        private Vector3 cameraRotation;
+        this.visual = new ModelVisual3D();
+        visual.Content = this.group;
 
-        public Scene()
+        this.cameraTransformGroup = new();
+        var cameraOffset = new Point3D(0, 2, 0);
+        var lookDirection = -(Vector3D)cameraOffset;
+        lookDirection.Normalize();
+        var upDirection = new Vector3D(0, -1, 1);
+        upDirection.Normalize();
+        this.camera = new PerspectiveCamera()
         {
-            this.ambientLight = new AmbientLight(System.Windows.Media.Color.FromArgb(255, 100, 100, 100));
-            this.directionalLight = new DirectionalLight(System.Windows.Media.Color.FromArgb(255, 255, 255, 255), new Vector3D(0, -1, -1));
-            this.transformGroup = new();
+            FieldOfView = 60,
+            FarPlaneDistance = 30000,
+            NearPlaneDistance = .1f,
+            Transform = this.cameraTransformGroup,
+        };
+        this.SetCameraPosition(new Vector3(0, 4, 0));
+        this.SetCameraRotation(new Vector3(180, 180, 0));
+    }
 
-            this.group = new Model3DGroup();
-            this.group.Children.Add(ambientLight);
-            this.group.Children.Add(directionalLight);
-            this.group.Transform = this.transformGroup;
+    public void Clear()
+    {
+        this.group.Children.Clear();
+        this.group.Children.Add(ambientLight);
+        this.group.Children.Add(directionalLight);
+    }
 
-            this.visual = new ModelVisual3D();
-            visual.Content = this.group;
+    public void Add(GeometryModel3D model, Vector3D position, Vector3D rotation)
+    {
+        var group = new Transform3DGroup();
+        group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.right, -rotation.X)));
+        group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.forward, -rotation.Y)));
+        group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, -rotation.Z)));
+        group.Children.Add(new TranslateTransform3D(position));
 
-            this.cameraTransformGroup = new();
-            var cameraOffset = new Point3D(0, 2, 0);
-            var lookDirection = -(Vector3D)cameraOffset;
-            lookDirection.Normalize();
-            var upDirection = new Vector3D(0, -1, 1);
-            upDirection.Normalize();
-            this.camera = new PerspectiveCamera()
-            {
-                FieldOfView = 60,
-                FarPlaneDistance = 30000,
-                NearPlaneDistance = .1f,
-                Transform = this.cameraTransformGroup,
-            };
-            this.SetCameraPosition(new Vector3(0, 4, 0));
-            this.SetCameraRotation(new Vector3(180, 180, 0));
-        }
+        model.Transform = group;
+        this.group.Children.Add(model);
+    }
 
-        public void Clear()
+    public void ApplyTo(Viewport3D viewport)
+    {
+        viewport.Children.Clear();
+        viewport.Children.Add(visual);
+        viewport.Camera = this.camera;
+    }
+
+    public void RotateWorld(float angle)
+    {
+        this.transformGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, angle)));
+    }
+
+    public void ZoomCamera(float value)
+    {
+        this.SetCameraPosition(this.CameraPosition + this.CameraForward * -value);
+    }
+
+    public void SetCameraPosition(Vector3 position)
+    {
+        this.cameraPosition = position;
+        Application.Current.Dispatcher.Invoke(DispatcherPriority.Input, () =>
         {
-            this.group.Children.Clear();
-            this.group.Children.Add(ambientLight);
-            this.group.Children.Add(directionalLight);
-        }
+            this.camera.Position = position.ToPoint3D();
+        });
+    }
 
-        public void Add(GeometryModel3D model, Vector3D position, Vector3D rotation)
+    public void SetCameraRotation(Vector3 rotation)
+    {
+        this.cameraRotation = rotation;
+
+        Application.Current.Dispatcher.Invoke(DispatcherPriority.Input, () =>
         {
-            var group = new Transform3DGroup();
-            group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.right, -rotation.X)));
-            group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.forward, -rotation.Y)));
-            group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, -rotation.Z)));
-            group.Children.Add(new TranslateTransform3D(position));
-
-            model.Transform = group;
-            this.group.Children.Add(model);
-        }
-
-        public void AddPyramid(Vector3D position, System.Windows.Media.Color color, float scale)
-        {
-            var model = MeshHelper.GetPyramid(color, scale);
-            model.Transform = new TranslateTransform3D(position);
-            this.group.Children.Add(model);
-        }
-
-        public void Add(MeshGeometry3D mesh, System.Windows.Media.Media3D.Material material, Vector3D position)
-        {
-            var model = MeshHelper.GetModel(mesh, material);
-            model.Transform = new TranslateTransform3D(position);
-            this.group.Children.Add(model);
-        }
-
-        public void ApplyTo(Viewport3D viewport)
-        {
-            viewport.Children.Clear();
-            viewport.Children.Add(visual);
-            viewport.Camera = this.camera;
-        }
-
-        public void RotateWorld(float angle)
-        {
-            this.transformGroup.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, angle)));
-        }
-
-        public void ZoomCamera(float value)
-        {
-            this.SetCameraPosition(this.CameraPosition + this.CameraForward * -value);
-        }
-
-        public void SetCameraPosition(Vector3 position)
-        {
-            this.cameraPosition = position;
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Input, () =>
-            {
-                this.camera.Position = position.ToPoint3D();
-            });
-        }
-
-        public void SetCameraRotation(Vector3 rotation)
-        {
-            this.cameraRotation = rotation;
-
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Input, () =>
-            {
-                this.camera.LookDirection = this.CameraForward.ToVector3D();
-                this.camera.UpDirection = this.CameraUp.ToVector3D();
-            });
-        }
+            this.camera.LookDirection = this.CameraForward.ToVector3D();
+            this.camera.UpDirection = this.CameraUp.ToVector3D();
+        });
+    }
 
 
-        public Vector3 CameraPosition
-            => this.cameraPosition;
+    public Vector3 CameraPosition
+        => this.cameraPosition;
 
-        public Vector3 CameraForward
-            => TransformAround(this.forward, this.cameraRotation).ToVector3();
+    public Vector3 CameraForward
+        => TransformAround(this.forward, this.cameraRotation).ToVector3();
 
-        public Vector3 CameraRight
-            => TransformAround(this.right, this.cameraRotation).ToVector3();
+    public Vector3 CameraRight
+        => TransformAround(this.right, this.cameraRotation).ToVector3();
 
-        public Vector3 CameraUp
-            => TransformAround(this.up, this.cameraRotation).ToVector3();
+    public Vector3 CameraUp
+        => TransformAround(this.up, this.cameraRotation).ToVector3();
 
-        public Vector3D TransformAround(Vector3D point, Vector3 rotation)
-        {
-            var group = new Transform3DGroup();
-            group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.right, -rotation.X)));
-            group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.forward, -rotation.Y)));
-            group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, -rotation.Z)));
+    public Vector3D TransformAround(Vector3D point, Vector3 rotation)
+    {
+        var group = new Transform3DGroup();
+        group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.right, -rotation.X)));
+        group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.forward, -rotation.Y)));
+        group.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(this.up, -rotation.Z)));
 
-            return group.Transform(point);
-        }
+        return group.Transform(point);
+    }
 
-        public void MoveCamera(Vector3 delta)
-        {
-            var newPosition =
-                this.CameraPosition +
-                this.CameraRight * delta.X +
-                this.CameraUp * delta.Z +
-                this.CameraForward * delta.Y;
+    public void MoveCamera(Vector3 delta)
+    {
+        var newPosition =
+            this.CameraPosition +
+            this.CameraRight * delta.X +
+            this.CameraUp * delta.Z +
+            this.CameraForward * delta.Y;
 
-            this.SetCameraPosition(newPosition);
-        }
+        this.SetCameraPosition(newPosition);
     }
 }

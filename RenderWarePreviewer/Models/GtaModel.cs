@@ -5,22 +5,24 @@ using System.IO;
 
 namespace RenderWarePreviewer.Models;
 
-public class GtaModel
+public enum AdditionalTextures
 {
-    public string ModelName { get; }
-    public string TxdName { get; }
+    None = 0x00,
+    Vehicle = 0x01,
+    Wheels = 0x02,
 
+}
 
-    public GtaModel(string modelName, string txdName)
-    {
-        this.ModelName = modelName;
-        this.TxdName = txdName;
-    }
+public class GtaModel(string modelName, string txdName, AdditionalTextures additionalTextures = AdditionalTextures.None)
+{
+    public string ModelName { get; } = modelName;
+    public string TxdName { get; } = txdName;
+    public AdditionalTextures AdditionalTextures { get; } = additionalTextures;
 
     public static GtaModel Create(Ped ped) => new(ped.ModelName, ped.TxdName);
     public static GtaModel Create(Weapon weapon) => new(weapon.ModelName, weapon.TxdName);
     public static GtaModel Create(Obj obj) => new(obj.ModelName, obj.TxdName);
-    public static GtaModel Create(Car car) => new(car.ModelName, car.TxdName);
+    public static GtaModel Create(Car car) => new(car.ModelName, car.TxdName, AdditionalTextures.Vehicle | AdditionalTextures.Wheels);
 }
 
 public class CustomGtaModel : GtaModel

@@ -164,7 +164,9 @@ public class AssetHelper
         return ide.Ide.Peds
             .Where(x => x.Id > 0)
             .Select(ReplaceSpecials)
-            .Concat(GetAdditionalSkins());
+            .Concat(GetMissingSkins())
+            .Concat(GetAdditionalSkins())
+            .OrderBy(x => x.Id);
     }
 
     public IEnumerable<Weapon> GetWeapons()
@@ -208,6 +210,34 @@ public class AssetHelper
             }
         }
         return ped;
+    }
+
+    private IEnumerable<Ped> GetMissingSkins()
+    {
+        var missingSkins = new Dictionary<int, string>()
+        {
+            [265] = "tenpen",
+            [266] = "pulaski",
+            [267] = "hern",
+            [268] = "dwayne",
+            [269] = "smoke",
+            [270] = "sweet",
+            [271] = "ryder",
+            [272] = "forelli",
+            [273] = "mediatr"
+        };
+
+        List<Ped> additionalPeds = new();
+
+        foreach (var (id, name) in missingSkins)
+            additionalPeds.Add(new Ped()
+            {
+                Id = id,
+                TxdName = name,
+                ModelName = name
+            });
+
+        return additionalPeds;
     }
 
     private IEnumerable<Ped> GetAdditionalSkins()
